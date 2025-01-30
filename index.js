@@ -1,54 +1,31 @@
-const timerEl = document.getElementById("timer");
-const startButtonEl = document.getElementById("start");
-const stopButtonEl = document.getElementById("stop");
-const resetButtonEl = document.getElementById("reset");
+const btnEl = document.getElementById("btn");
+const birthdayEl = document.getElementById("birthday");
+const resultEl = document.getElementById("result");
 
-let startTime = 0;
-let elapsedTime = 0;
-let timerInterval;
-
-function startTimer() {
-  startTime = Date.now() - elapsedTime;
-
-  timerInterval = setInterval(() => {
-    elapsedTime = Date.now() - startTime;
-    timerEl.textContent = formatTime(elapsedTime);
-  }, 10);
-
-  startButtonEl.disabled = true;
-  stopButtonEl.disabled = false;
+function calculateAge() {
+  const birthdayValue = birthdayEl.value;
+  if (birthdayValue === "") {
+    alert("Please enter your birthday");
+  } else {
+    const age = getAge(birthdayValue);
+    resultEl.innerText = `Your age is ${age} ${age > 1 ? "years" : "year"} old`;
+  }
 }
 
-function formatTime(elapsedTime) {
-  const milliseconds = Math.floor((elapsedTime % 1000) / 10);
-  const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-  const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-  const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-  return (
-    (hours ? (hours > 9 ? hours : "0" + hours) : "00") +
-    ":" +
-    (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") +
-    ":" +
-    (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") +
-    "." +
-    (milliseconds > 9 ? milliseconds : "0" + milliseconds)
-  );
-}
-function stopTimer() {
-  clearInterval(timerInterval);
-  startButtonEl.disabled = false;
-  stopButtonEl.disabled = true;
-}
-function resetTimer() {
-  clearInterval(timerInterval);
+function getAge(birthdayValue) {
+  const currentDate = new Date();
+  const birthdayDate = new Date(birthdayValue);
+  let age = currentDate.getFullYear() - birthdayDate.getFullYear();
+  const month = currentDate.getMonth() - birthdayDate.getMonth();
 
-  elapsedTime = 0;
-  timerEl.textContent = "00:00:00";
+  if (
+    month < 0 ||
+    (month === 0 && currentDate.getDate() < birthdayDate.getDate())
+  ) {
+    age--;
+  }
 
-  startButtonEl.disabled = false;
-  stopButtonEl.disabled = true;
+  return age;
 }
 
-startButtonEl.addEventListener("click", startTimer);
-stopButtonEl.addEventListener("click", stopTimer);
-resetButtonEl.addEventListener("click", resetTimer);
+btnEl.addEventListener("click", calculateAge);
